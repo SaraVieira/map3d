@@ -1,8 +1,11 @@
+import { css } from "@emotion/react";
+import { Space } from "./space/Space";
+
 function App() {
   return (
-    <>
-      <p>map3d</p>
-    </>
+    <div css={css({ height: "100%", width: "100%" })}>
+      <Space />
+    </div>
   );
 }
 
