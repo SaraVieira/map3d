@@ -6,20 +6,36 @@ import { Description } from "@/components/text/Description";
 import { Column } from "@/components/flex/Column";
 import { MapComponent } from "@/components/map/SelectMap";
 import { useState } from "react";
-import { BottomButton } from "@/components/button/BottomButton";
+import { NextButton, PrevButton } from "@/components/button/BottomButton";
+import { BuildingHeights } from "@/components/map/Processing";
 
 function App() {
   const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(true);
-  const handleDone = (e) => {
-    console.log(e);
+  const [areaData, setAreaData] = useState([]);
+  const [steps, setSteps] = useState(["front", "processing"]);
+  const [step, setStep] = useState(0);
+
+  const handleDone = (data) => {
+    setAreaData(data);
     setIsNextButtonDisabled(false);
   };
 
-  const handleClickNextStep = () => {};
+  const handleRemove = () => {
+    setAreaData([]);
+    setIsNextButtonDisabled(true);
+  };
+
+  const handleClickNextStep = () => {
+    setStep(step + 1);
+  };
+
+  const handleClickPrevStep = () => {
+    setStep(step - 1);
+  };
 
   return (
     <div css={css({ height: "100%", width: "100%" })}>
-      <FullscreenModal isOpen={true}>
+      <FullscreenModal isOpen={steps[step] == "front"}>
         <Column gap="1rem">
           <Column gap="0.5rem">
             <Title>Generate 3d map</Title>
@@ -27,16 +43,37 @@ function App() {
               Tools to create 3D maps based on maps and export them in 3D format
             </Description>
           </Column>
-          <MapComponent onDone={handleDone}></MapComponent>
+          <MapComponent
+            onRemove={handleRemove}
+            onDone={handleDone}
+          ></MapComponent>
         </Column>
       </FullscreenModal>
 
-      <BottomButton
+      <FullscreenModal isOpen={steps[step] == "processing"}>
+        <Column gap="1rem">
+          <Column gap="0.5rem">
+            <Title>Processing</Title>
+            <Description>
+              Tools to create 3D maps based on maps and export them in 3D format
+            </Description>
+
+            <BuildingHeights area={areaData} />
+          </Column>
+        </Column>
+      </FullscreenModal>
+
+      <PrevButton isShow={step != 0} onClick={handleClickPrevStep}>
+        Prev Step
+      </PrevButton>
+
+      <NextButton
+        isShow={true}
         disabled={isNextButtonDisabled}
         onClick={handleClickNextStep}
       >
         Next Step
-      </BottomButton>
+      </NextButton>
 
       <Space />
     </div>
