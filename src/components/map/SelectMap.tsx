@@ -9,7 +9,13 @@ import L, { LatLng, LatLngBounds } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { css } from "@emotion/react";
 
-function RectangleSelector({ isDrag = true }: { isDrag: boolean }) {
+function RectangleSelector({
+  isDrag = true,
+  onChange,
+}: {
+  isDrag: boolean;
+  onChange: (LatLngBounds: LatLngBounds) => void;
+}) {
   const [bounds, setBounds] = useState<LatLngBounds | null>(null);
   const [firstPoint, setFirstPoint] = useState<LatLng | null>(null);
 
@@ -35,7 +41,7 @@ function RectangleSelector({ isDrag = true }: { isDrag: boolean }) {
     mouseup(e) {
       if (firstPoint) {
         setBounds(new L.LatLngBounds(firstPoint, e.latlng));
-        console.log(firstPoint, e.latlng);
+        onChange(new L.LatLngBounds(firstPoint, e.latlng));
         setFirstPoint(null);
       }
     },
@@ -45,11 +51,17 @@ function RectangleSelector({ isDrag = true }: { isDrag: boolean }) {
   ) : null;
 }
 
-export function MapComponent() {
+export function MapComponent({ onDone }: { onDone: (e) => void }) {
   const [isDrag, setIsDrag] = useState(true);
+
   const handleClickSwitchDrag = () => {
     setIsDrag(!isDrag);
   };
+
+  const handleChangeDone = (e) => {
+    onDone([e._northEast, e._southWest]);
+  };
+
   return (
     <div
       css={css({
@@ -89,7 +101,7 @@ export function MapComponent() {
           attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <RectangleSelector isDrag={isDrag} />
+        <RectangleSelector isDrag={isDrag} onChange={handleChangeDone} />
       </MapContainer>
     </div>
   );

@@ -5,8 +5,18 @@ import { Title } from "@/components/text/Title";
 import { Description } from "@/components/text/Description";
 import { Column } from "@/components/flex/Column";
 import { MapComponent } from "@/components/map/SelectMap";
+import { useState } from "react";
+import { BottomButton } from "@/components/button/BottomButton";
 
 function App() {
+  const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(true);
+  const handleDone = (e) => {
+    console.log(e);
+    setIsNextButtonDisabled(false);
+  };
+
+  const handleClickNextStep = () => {};
+
   return (
     <div css={css({ height: "100%", width: "100%" })}>
       <FullscreenModal isOpen={true}>
@@ -17,9 +27,17 @@ function App() {
               Tools to create 3D maps based on maps and export them in 3D format
             </Description>
           </Column>
-          <MapComponent></MapComponent>
+          <MapComponent onDone={handleDone}></MapComponent>
         </Column>
       </FullscreenModal>
+
+      <BottomButton
+        disabled={isNextButtonDisabled}
+        onClick={handleClickNextStep}
+      >
+        Next Step
+      </BottomButton>
+
       <Space />
     </div>
   );
