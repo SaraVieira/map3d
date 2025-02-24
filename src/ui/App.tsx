@@ -8,6 +8,12 @@ import { MapComponent } from "@/components/map/SelectMap";
 import { useState } from "react";
 import { NextButton, PrevButton } from "@/components/button/BottomButton";
 import { BuildingHeights } from "@/components/map/Processing";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
+const IconSize = css({
+  width: "14px",
+  height: "14px",
+});
 
 function App() {
   const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(true);
@@ -64,7 +70,7 @@ function App() {
       </FullscreenModal>
 
       <PrevButton isShow={step != 0} onClick={handleClickPrevStep}>
-        Prev Step
+        <ChevronLeft css={IconSize} /> Prev Step
       </PrevButton>
 
       <NextButton
@@ -72,7 +78,7 @@ function App() {
         disabled={isNextButtonDisabled}
         onClick={handleClickNextStep}
       >
-        Next Step
+        Next Step <ChevronRight css={IconSize} />
       </NextButton>
 
       <Space />

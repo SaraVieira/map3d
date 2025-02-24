@@ -28,7 +28,9 @@ export function NextButton(props: ButtonProps) {
         outline: "rgba(240, 240, 244, 0.51) solid 0.1rem",
         cursor: "pointer",
         transition: "0.2s",
-        display: props.isShow ? "" : "none",
+        display: props.isShow ? "flex" : "none",
+        alignItems: "center",
+        gap: "0.5rem",
         ":hover": {
           backgroundColor: "#ebeef0c2",
         },
@@ -63,8 +65,9 @@ export function PrevButton(props: ButtonProps) {
         outline: "rgba(240, 240, 244, 0.51) solid 0.1rem",
         cursor: "pointer",
         transition: "0.2s",
-        display: props.isShow ? "" : "none",
-
+        display: props.isShow ? "flex" : "none",
+        alignItems: "center",
+        gap: "0.5rem",
         ":hover": {
           backgroundColor: "#ebeef0c2",
         },

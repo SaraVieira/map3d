@@ -8,6 +8,12 @@ import {
 import L, { LatLng, LatLngBounds } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { css } from "@emotion/react";
+import { CircleMinus, MousePointerClick } from "lucide-react";
+
+const IconSize = css({
+  width: "14px",
+  height: "14px",
+});
 
 function RectangleSelector({
   isDrag = true,
@@ -95,7 +101,7 @@ export function MapComponent({
       >
         <button
           css={css({
-            display: isDrag ? "none" : "",
+            display: bounds == null || isDrag == true ? "none" : "flex",
             color: "#ffffff",
 
             backgroundColor: "#ef4444",
@@ -106,13 +112,15 @@ export function MapComponent({
             outline: "#ef4444c2 solid 0.1rem",
             cursor: "pointer",
             transition: "0.2s",
+            alignItems: "center",
+            gap: "0.5rem",
             ":hover": {
               backgroundColor: "#ef4444",
             },
           })}
           onClick={handleClickRemoveBox}
         >
-          Remove Box
+          <CircleMinus css={IconSize} /> Remove Box
         </button>
 
         <button
@@ -129,13 +137,16 @@ export function MapComponent({
               : "rgba(240, 240, 244, 0.51) solid 0.1rem",
             cursor: "pointer",
             transition: "0.2s",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
             ":hover": {
               backgroundColor: isDrag ? "#085fbd" : "#ebeef0c2",
             },
           })}
           onClick={handleClickSwitchDrag}
         >
-          {isDrag ? "Select Box" : "Back to Drag"}
+          {isDrag ? <SelectBox /> : "Back to Drag"}
         </button>
       </div>
 
@@ -158,5 +169,14 @@ export function MapComponent({
         />
       </MapContainer>
     </div>
+  );
+}
+
+function SelectBox() {
+  return (
+    <>
+      <MousePointerClick css={IconSize} />
+      <span>Select Box</span>
+    </>
   );
 }
