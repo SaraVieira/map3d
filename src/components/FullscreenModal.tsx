@@ -23,6 +23,7 @@ export function FullscreenModal({
       <div
         css={css({
           padding: "2rem",
+          paddingTop: "4rem",
           width: "100%",
         })}
       >

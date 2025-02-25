@@ -16,6 +16,7 @@ import { ChevronLeft, ChevronRight, Download } from "lucide-react";
 import { useAreaStore } from "@/state/areaStore";
 import { useActionStore } from "@/state/exportStore";
 import { Modal } from "@/components/modal/Modal";
+import { TopNav } from "@/components/nav/TopNav";
 
 const IconSize = css({
   width: "14px",
@@ -75,6 +76,8 @@ function App() {
 
   return (
     <div css={css({ height: "100%", width: "100%" })}>
+      <TopNav />
+
       <FullscreenModal isOpen={steps[step] == "front"}>
         <Column gap="1rem">
           <Column gap="0.5rem">
