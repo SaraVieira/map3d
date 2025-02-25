@@ -1,3 +1,4 @@
+import { useCarStore } from "@/state/carStore";
 import { css } from "@emotion/react";
 
 const TOP_PANEL_HEIGHT = "3rem";
@@ -6,7 +7,9 @@ const BORDER_COLOR = "#ededf290";
 const breakpoints = [768];
 const mq = breakpoints.map((bp) => `@media (max-width: ${bp}px)`);
 
-export function TopNav() {
+export function TopNav({ step }: { step: number }) {
+  const setThirdMode = useCarStore((state) => state.setThirdMode);
+
   return (
     <div
       css={css({
@@ -65,7 +68,25 @@ export function TopNav() {
             display: "none",
           },
         })}
-      ></div>
+      >
+        <button
+          style={{
+            display: step == 2 ? "" : "none",
+            color: "#000000",
+            backgroundColor: "#ffffff96",
+            backdropFilter: "blur(8px)",
+            border: "none",
+            padding: "0.5rem 1rem",
+            borderRadius: "8px",
+            fontWeight: "300",
+            fontSize: "12px",
+            outline: "rgba(240, 240, 244, 0.51) solid 0.1rem",
+          }}
+          onClick={() => setThirdMode(true)}
+        >
+          Car Mode
+        </button>
+      </div>
     </div>
   );
 }

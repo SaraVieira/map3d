@@ -76,7 +76,7 @@ function App() {
 
   return (
     <div css={css({ height: "100%", width: "100%" })}>
-      <TopNav />
+      <TopNav step={step} />
 
       <FullscreenModal isOpen={steps[step] == "front"}>
         <Column gap="1rem">

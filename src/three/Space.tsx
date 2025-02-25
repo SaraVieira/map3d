@@ -5,6 +5,7 @@ import { OrbitControls, Html, Sky, Environment } from "@react-three/drei";
 import * as THREE from "three";
 import { useActionStore } from "@/state/exportStore";
 import { GLTFExporter } from "three/examples/jsm/Addons.js";
+import Car from "./Car";
 
 function Building({
   shape,
@@ -217,6 +218,7 @@ export function Space() {
   };
 
   const buildingsData = areaData();
+
   return (
     <Canvas camera={{ fov: 90, near: 0.1, far: 7000 }}>
       <ambientLight intensity={Math.PI / 2} />
@@ -238,7 +240,7 @@ export function Space() {
 
       <Roads area={realCenter} />
       <pointLight position={[-10, -10, -10]} decay={0} intensity={Math.PI} />
-      <OrbitControls />
+      <Car />
       <Export />
       <Sky
         distance={450000}
