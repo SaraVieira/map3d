@@ -82,3 +82,36 @@ export function PrevButton(props: ButtonProps) {
     </button>
   );
 }
+
+export function Button(props: ButtonProps) {
+  return (
+    <button
+      css={css({
+        zIndex: 9999,
+        color: "#000000",
+        backgroundColor: "#ffffff96",
+        backdropFilter: "blur(8px)",
+        border: "none",
+        padding: "0.75rem 1.25rem",
+        borderRadius: "8px",
+        fontWeight: "300",
+        fontSize: "14px",
+        outline: "rgba(240, 240, 244, 0.51) solid 0.1rem",
+        cursor: "pointer",
+        transition: "0.2s",
+        display: props.isShow ? "" : "none",
+        gap: "0.5rem",
+        ":hover": {
+          backgroundColor: "#ebeef0c2",
+        },
+        ":disabled": {
+          backgroundColor: "#ebeef0c2",
+          cursor: "not-allowed",
+        },
+      })}
+      {...props}
+    >
+      {props.children}
+    </button>
+  );
+}

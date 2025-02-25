@@ -6,11 +6,16 @@ import { Description } from "@/components/text/Description";
 import { Column } from "@/components/flex/Column";
 import { MapComponent } from "@/components/map/SelectMap";
 import { useState } from "react";
-import { NextButton, PrevButton } from "@/components/button/BottomButton";
+import {
+  Button,
+  NextButton,
+  PrevButton,
+} from "@/components/button/BottomButton";
 import { BuildingHeights } from "@/components/map/Processing";
 import { ChevronLeft, ChevronRight, Download } from "lucide-react";
 import { useAreaStore } from "@/state/areaStore";
 import { useActionStore } from "@/state/exportStore";
+import { Modal } from "@/components/modal/Modal";
 
 const IconSize = css({
   width: "14px",
@@ -22,8 +27,23 @@ function App() {
   const [areaData, setAreaData] = useState([]);
   const [steps, setSteps] = useState(["front", "processing"]);
   const [step, setStep] = useState(0);
+  const [isWarnModal, setIsWarnModal] = useState(false);
+
   const setCenter = useAreaStore((state) => state.setCenter);
   const setAction = useActionStore((state) => state.setAction);
+
+  const checkIsBig = () => {
+    const a = areaData[0].lat - areaData[1].lat;
+    const b = areaData[0].lng - areaData[1].lng;
+
+    console.log(a + b);
+
+    if (a + b > 0.1) {
+      return true;
+    } else {
+      return false;
+    }
+  };
 
   const handleDone = (data) => {
     setAreaData(data);
@@ -38,6 +58,10 @@ function App() {
   };
 
   const handleClickNextStep = () => {
+    if (step == 0 && checkIsBig()) {
+      setIsWarnModal(true);
+      return false;
+    }
     setStep(step + 1);
   };
 
@@ -71,7 +95,7 @@ function App() {
           <Column gap="0.5rem">
             <Title>Processing</Title>
             <Description>
-              Tools to create 3D maps based on maps and export them in 3D format
+              Click the button below to get the building information.
             </Description>
 
             <BuildingHeights area={areaData} />
@@ -94,6 +118,23 @@ function App() {
       <NextButton isShow={step == 2} onClick={handleClickExport}>
         Export GLB <Download css={IconSize} />
       </NextButton>
+
+      <Modal isOpen={isWarnModal} onClose={() => setIsWarnModal(false)}>
+        <Column gap="0.5rem">
+          <Title>The area is too big </Title>
+          <Description>Do you want to proceed?</Description>
+          <Button
+            isShow={step != 2}
+            disabled={isNextButtonDisabled}
+            onClick={() => {
+              setStep(step + 1);
+              setIsWarnModal(false);
+            }}
+          >
+            Next Step <ChevronRight css={IconSize} />
+          </Button>
+        </Column>
+      </Modal>
 
       <Space></Space>
     </div>
