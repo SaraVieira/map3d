@@ -1,5 +1,6 @@
 import { useAreaStore } from "@/state/areaStore";
-import { css } from "@emotion/react";
+import { css, keyframes } from "@emotion/react";
+import { Loader2 } from "lucide-react";
 import React, { useState } from "react";
 
 interface Building {
@@ -8,11 +9,20 @@ interface Building {
   geometry?: { lat: number; lng: number }[];
 }
 
+const spinAnimation = keyframes`
+from { transform: rotate(0deg); }
+to { transform: rotate(360deg); }
+`;
+
 export function BuildingHeights({ area }: { area: any }) {
   const [buildings, setBuildings] = useState<Building[]>([]);
+  const [loading, setLoading] = useState(false);
+
   const appendAreas = useAreaStore((state) => state.appendAreas);
 
   const requestBuildings = () => {
+    setLoading(true);
+
     const south = area[1].lat;
     const west = area[1].lng;
     const north = area[0].lat;
@@ -40,6 +50,9 @@ export function BuildingHeights({ area }: { area: any }) {
       })
       .catch((error) => {
         console.error("Error fetching building data:", error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
@@ -70,6 +83,14 @@ export function BuildingHeights({ area }: { area: any }) {
         })}
         onClick={requestBuildings}
       >
+        {loading && (
+          <Loader2
+            css={css({
+              animation: `${spinAnimation} 1s linear infinite`,
+            })}
+            size={16}
+          />
+        )}
         request
       </button>
       <ul
