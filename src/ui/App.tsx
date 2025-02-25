@@ -9,6 +9,7 @@ import { useState } from "react";
 import { NextButton, PrevButton } from "@/components/button/BottomButton";
 import { BuildingHeights } from "@/components/map/Processing";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useAreaStore } from "@/state/areaStore";
 
 const IconSize = css({
   width: "14px",
@@ -20,9 +21,12 @@ function App() {
   const [areaData, setAreaData] = useState([]);
   const [steps, setSteps] = useState(["front", "processing"]);
   const [step, setStep] = useState(0);
+  const setCenter = useAreaStore((state) => state.setCenter);
 
   const handleDone = (data) => {
     setAreaData(data);
+    setCenter(data);
+    console.log(data, "AAEE");
     setIsNextButtonDisabled(false);
   };
 

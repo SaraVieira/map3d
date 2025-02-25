@@ -1,3 +1,4 @@
+import { useAreaStore } from "@/state/areaStore";
 import { css } from "@emotion/react";
 import React, { useState } from "react";
 
@@ -9,6 +10,7 @@ interface Building {
 
 export function BuildingHeights({ area }: { area: any }) {
   const [buildings, setBuildings] = useState<Building[]>([]);
+  const appendAreas = useAreaStore((state) => state.appendAreas);
 
   const requestBuildings = () => {
     console.log(area);
@@ -33,6 +35,8 @@ export function BuildingHeights({ area }: { area: any }) {
             : undefined,
         }));
         setBuildings(blds);
+        appendAreas(blds);
+
         console.log("Building Data:", blds);
       })
       .catch((error) => {
