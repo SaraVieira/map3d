@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Canvas, useThree, useLoader } from "@react-three/fiber";
+import { Canvas, useThree } from "@react-three/fiber";
 import { useAreaStore } from "@/state/areaStore";
 import { OrbitControls, Html } from "@react-three/drei";
 import * as THREE from "three";
-import { css } from "@emotion/react";
 import { useActionStore } from "@/state/exportStore";
 import { GLTFExporter } from "three/examples/jsm/Addons.js";
 
@@ -75,15 +74,17 @@ function Building({
 
 function Roads({ area }: { area: any }) {
   const [roads, setRoads] = useState<any[]>([]);
-  const center = useAreaStore((state) => state.center);
-  const refLat = (center[1].lat + center[0].lat) / 2;
-  const refLng = (center[1].lng + center[0].lng) / 2;
+  if (!area || area.length < 2) return null;
+  const refLat = (area[1].lat + area[0].lat) / 2;
+  const refLng = (area[1].lng + area[0].lng) / 2;
   const scale = 51000;
+
   function project(lat: number, lng: number) {
     const x = (lng - refLng) * scale;
     const y = (lat - refLat) * scale;
     return new THREE.Vector2(x, y);
   }
+
   useEffect(() => {
     const south = area[1].lat;
     const west = area[1].lng;
@@ -101,6 +102,7 @@ function Roads({ area }: { area: any }) {
       })
       .catch((err) => console.error(err));
   }, [area]);
+
   return (
     <>
       {roads.map((road, index) => {
@@ -123,6 +125,7 @@ function Roads({ area }: { area: any }) {
     </>
   );
 }
+
 export function Export() {
   const { scene } = useThree();
   const action = useActionStore((state) => state.action);
@@ -136,12 +139,9 @@ export function Export() {
   const exportGLB = () => {
     const sceneClone = scene.clone(true);
     sceneClone.traverse((child) => {
-      if (child.userData && child.userData.skipExport === true) {
+      if (child.userData && child.userData.skipExport === true)
         child.parent?.remove(child);
-      }
-      if ((child as any).isHtml === true) {
-        child.parent?.remove(child);
-      }
+      if ((child as any).isHtml === true) child.parent?.remove(child);
     });
     const exporter = new GLTFExporter();
     const options = { binary: true, embedImages: true };
@@ -172,15 +172,22 @@ export function Export() {
 
 export function Space() {
   const areas = useAreaStore((state) => state.areas);
+  const [realCenter, setRealCenter] = useState();
   const center = useAreaStore((state) => state.center);
   const refLat = (center[1].lat + center[0].lat) / 2;
   const refLng = (center[1].lng + center[0].lng) / 2;
   const scale = 51000;
+
   function project(lat: number, lng: number) {
     const x = (lng - refLng) * scale;
     const y = (lat - refLat) * scale;
     return new THREE.Vector2(x, y);
   }
+
+  useEffect(() => {
+    setRealCenter(center);
+  }, [areas]);
+
   const areaData = () => {
     const result: Array<{
       shape: THREE.Shape;
@@ -192,18 +199,13 @@ export function Space() {
       const shapePoints = bld.geometry.map((pt: any) =>
         project(pt.lat, pt.lng)
       );
-      if (!shapePoints[0].equals(shapePoints[shapePoints.length - 1])) {
+      if (!shapePoints[0].equals(shapePoints[shapePoints.length - 1]))
         shapePoints.push(shapePoints[0]);
-      }
       const shape = new THREE.Shape(shapePoints);
       let heightValue = parseFloat(bld.tags.height || "");
       const heightLevels = parseFloat(bld.tags["building:levels"] || "");
-      if (isNaN(heightValue)) {
-        heightValue = 10;
-      }
-      if (!isNaN(heightLevels)) {
-        heightValue = heightLevels * 2.2;
-      }
+      if (isNaN(heightValue)) heightValue = 10;
+      if (!isNaN(heightLevels)) heightValue = heightLevels * 2.2;
       const extrudeSettings = {
         steps: 1,
         depth: heightValue,
@@ -213,6 +215,7 @@ export function Space() {
     });
     return result;
   };
+
   const buildingsData = areaData();
   return (
     <Canvas camera={{ fov: 90, near: 0.1, far: 7000 }}>
@@ -232,7 +235,8 @@ export function Space() {
           tags={item.tags}
         />
       ))}
-      <Roads area={center} />
+
+      <Roads area={realCenter} />
       <pointLight position={[-10, -10, -10]} decay={0} intensity={Math.PI} />
       <OrbitControls />
       <Export />
