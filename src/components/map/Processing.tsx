@@ -13,7 +13,6 @@ export function BuildingHeights({ area }: { area: any }) {
   const appendAreas = useAreaStore((state) => state.appendAreas);
 
   const requestBuildings = () => {
-    console.log(area);
     const south = area[1].lat;
     const west = area[1].lng;
     const north = area[0].lat;
@@ -50,7 +49,29 @@ export function BuildingHeights({ area }: { area: any }) {
         position: "relative",
       })}
     >
-      <button onClick={requestBuildings}>request</button>
+      <button
+        css={css({
+          color: "#ffffff",
+
+          backgroundColor: "#007bffe8",
+          backdropFilter: "blur(8px)",
+          border: "none",
+          padding: "0.5rem 1rem",
+          borderRadius: "8px",
+          outline: "#086ad4c2 solid 0.1rem",
+          cursor: "pointer",
+          transition: "0.2s",
+          display: "flex",
+          alignItems: "center",
+          gap: "0.5rem",
+          ":hover": {
+            backgroundColor: "#085fbd",
+          },
+        })}
+        onClick={requestBuildings}
+      >
+        request
+      </button>
       <ul
         css={css({
           overflow: "scroll",
