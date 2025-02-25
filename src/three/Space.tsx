@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
 import { useAreaStore } from "@/state/areaStore";
-import { OrbitControls, Html } from "@react-three/drei";
+import { OrbitControls, Html, Sky, Environment } from "@react-three/drei";
 import * as THREE from "three";
 import { useActionStore } from "@/state/exportStore";
 import { GLTFExporter } from "three/examples/jsm/Addons.js";
@@ -240,6 +240,13 @@ export function Space() {
       <pointLight position={[-10, -10, -10]} decay={0} intensity={Math.PI} />
       <OrbitControls />
       <Export />
+      <Sky
+        distance={450000}
+        sunPosition={[0, 1, 0]}
+        inclination={0}
+        azimuth={0.25}
+      />
+      <Environment preset="city" />
     </Canvas>
   );
 }
