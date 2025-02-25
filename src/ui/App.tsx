@@ -19,6 +19,7 @@ import { Modal } from "@/components/modal/Modal";
 import { TopNav } from "@/components/nav/TopNav";
 import { getCookie } from "@/utils/cookie";
 import { Row } from "@/components/flex/Row";
+import instanceFleet from "@/api/axios";
 
 const IconSize = css({
   width: "14px",
@@ -33,9 +34,12 @@ function App() {
   const [isWarnModal, setIsWarnModal] = useState(false);
   const [isExportModal, setIsExportModal] = useState(false);
   const [isFleetLogin, setIsFleetLogin] = useState(false);
+  const [isFleetModal, setIsFleetModal] = useState(false);
+  const [spaceList, setSpaceList] = useState([]);
 
   const setCenter = useAreaStore((state) => state.setCenter);
   const setAction = useActionStore((state) => state.setAction);
+  const setFleet = useActionStore((state) => state.setFleet);
 
   const checkIsBig = () => {
     const a = areaData[0].lat - areaData[1].lat;
@@ -56,6 +60,31 @@ function App() {
 
   const exportFleet = () => {
     setAction(true);
+  };
+
+  const getFleetSpaces = async () => {
+    const getSpace: any = await instanceFleet.get("space");
+
+    setSpaceList([
+      ...getSpace.data.spaces.map((item) => {
+        return {
+          ...item,
+          key: item.id,
+        };
+      }),
+    ]);
+  };
+
+  const putGlbOnFleetSpace = (spaceId) => {
+    setFleet(spaceId, "fleet");
+    setTimeout(() => {
+      exportFleet();
+    }, 100);
+  };
+
+  const loadFleetSpace = () => {
+    getFleetSpaces();
+    setIsFleetModal(true);
   };
 
   const checkFleetLogin = () => {
@@ -174,7 +203,9 @@ function App() {
             </Button>
 
             {isFleetLogin ? (
-              <Button isShow={true}>Fleet Interlock</Button>
+              <Button isShow={true} onClick={loadFleetSpace}>
+                Fleet Interlock
+              </Button>
             ) : (
               <Button
                 isShow={true}
@@ -184,6 +215,17 @@ function App() {
               </Button>
             )}
           </Row>
+        </Column>
+      </Modal>
+
+      <Modal isOpen={isFleetModal} onClose={() => setIsFleetModal(false)}>
+        <Column gap="0.5rem">
+          <Title>Select Fleet Space</Title>
+          {spaceList.map((item, index) => (
+            <Button isShow={true} onClick={() => putGlbOnFleetSpace(item.id)}>
+              {item.title}
+            </Button>
+          ))}
         </Column>
       </Modal>
 

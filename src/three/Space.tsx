@@ -6,6 +6,7 @@ import * as THREE from "three";
 import { useActionStore } from "@/state/exportStore";
 import { GLTFExporter } from "three/examples/jsm/Addons.js";
 import Car from "./Car";
+import instanceFleet from "@/api/axios";
 
 function Building({
   shape,
@@ -130,13 +131,38 @@ function Roads({ area }: { area: any }) {
 export function Export() {
   const { scene } = useThree();
   const action = useActionStore((state) => state.action);
+  const fleetSpaceId = useActionStore((state) => state.fleetSpaceId);
+
+  const exportType = useActionStore((state) => state.exportType);
+
   const setAction = useActionStore((state) => state.setAction);
+
   useEffect(() => {
     if (action === true) {
       setAction(false);
       exportGLB();
     }
   }, [action, setAction, scene]);
+
+  const uploadFleet = async (blob) => {
+    const formData = new FormData();
+
+    formData.append("object", blob, "box3d.glb");
+    formData.append("title", "New Object");
+    formData.append("description", "");
+    formData.append("spaceId", fleetSpaceId);
+
+    const requestUploadFile = await instanceFleet.post(
+      "space/file/mesh",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+  };
+
   const exportGLB = () => {
     const sceneClone = scene.clone(true);
     sceneClone.traverse((child) => {
@@ -151,13 +177,20 @@ export function Export() {
       (result) => {
         if (result instanceof ArrayBuffer) {
           const blob = new Blob([result], { type: "model/gltf-binary" });
-          const link = document.createElement("a");
-          link.style.display = "none";
-          document.body.appendChild(link);
-          link.href = URL.createObjectURL(blob);
-          link.download = "scene.glb";
-          link.click();
-          document.body.removeChild(link);
+
+          if (exportType == "glb") {
+            const link = document.createElement("a");
+            link.style.display = "none";
+            document.body.appendChild(link);
+            link.href = URL.createObjectURL(blob);
+            link.download = "scene.glb";
+            link.click();
+            document.body.removeChild(link);
+          }
+
+          if (exportType == "fleet") {
+            uploadFleet(blob);
+          }
         } else {
           console.error("GLB export failed: unexpected result", result);
         }
