@@ -17,6 +17,8 @@ import { useAreaStore } from "@/state/areaStore";
 import { useActionStore } from "@/state/exportStore";
 import { Modal } from "@/components/modal/Modal";
 import { TopNav } from "@/components/nav/TopNav";
+import { getCookie } from "@/utils/cookie";
+import { Row } from "@/components/flex/Row";
 
 const IconSize = css({
   width: "14px",
@@ -29,6 +31,8 @@ function App() {
   const [steps, setSteps] = useState(["front", "processing"]);
   const [step, setStep] = useState(0);
   const [isWarnModal, setIsWarnModal] = useState(false);
+  const [isExportModal, setIsExportModal] = useState(false);
+  const [isFleetLogin, setIsFleetLogin] = useState(false);
 
   const setCenter = useAreaStore((state) => state.setCenter);
   const setAction = useActionStore((state) => state.setAction);
@@ -44,6 +48,23 @@ function App() {
     } else {
       return false;
     }
+  };
+
+  const exportFile = () => {
+    setAction(true);
+  };
+
+  const exportFleet = () => {
+    setAction(true);
+  };
+
+  const checkFleetLogin = () => {
+    try {
+      const isCookie = getCookie("token");
+      if (isCookie) {
+        setIsFleetLogin(true);
+      }
+    } catch (error) {}
   };
 
   const handleDone = (data) => {
@@ -71,8 +92,12 @@ function App() {
   };
 
   const handleClickExport = () => {
-    setAction(true);
+    setIsExportModal(true);
   };
+
+  useState(() => {
+    checkFleetLogin();
+  }, []);
 
   return (
     <div css={css({ height: "100%", width: "100%" })}>
@@ -136,6 +161,29 @@ function App() {
           >
             Next Step <ChevronRight css={IconSize} />
           </Button>
+        </Column>
+      </Modal>
+
+      <Modal isOpen={isExportModal} onClose={() => setIsExportModal(false)}>
+        <Column gap="0.5rem">
+          <Title>Export</Title>
+
+          <Row gap="0.5rem">
+            <Button isShow={true} onClick={exportFile}>
+              GLB Download <Download css={IconSize} />
+            </Button>
+
+            {isFleetLogin ? (
+              <Button isShow={true}>Fleet Interlock</Button>
+            ) : (
+              <Button
+                isShow={true}
+                onClick={() => window.open("https://fleet.im/auth")}
+              >
+                Fleet Login
+              </Button>
+            )}
+          </Row>
         </Column>
       </Modal>
 
