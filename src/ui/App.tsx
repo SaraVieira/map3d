@@ -1,5 +1,5 @@
 import { css } from "@emotion/react";
-import { Space } from "../three/Space";
+import { ExportButton, Space } from "../three/Space";
 import { FullscreenModal } from "../components/FullscreenModal";
 import { Title } from "@/components/text/Title";
 import { Description } from "@/components/text/Description";
@@ -8,8 +8,9 @@ import { MapComponent } from "@/components/map/SelectMap";
 import { useState } from "react";
 import { NextButton, PrevButton } from "@/components/button/BottomButton";
 import { BuildingHeights } from "@/components/map/Processing";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Download } from "lucide-react";
 import { useAreaStore } from "@/state/areaStore";
+import { useActionStore } from "@/state/exportStore";
 
 const IconSize = css({
   width: "14px",
@@ -22,6 +23,7 @@ function App() {
   const [steps, setSteps] = useState(["front", "processing"]);
   const [step, setStep] = useState(0);
   const setCenter = useAreaStore((state) => state.setCenter);
+  const setAction = useActionStore((state) => state.setAction);
 
   const handleDone = (data) => {
     setAreaData(data);
@@ -41,6 +43,10 @@ function App() {
 
   const handleClickPrevStep = () => {
     setStep(step - 1);
+  };
+
+  const handleClickExport = () => {
+    setAction(true);
   };
 
   return (
@@ -78,14 +84,18 @@ function App() {
       </PrevButton>
 
       <NextButton
-        isShow={true}
+        isShow={step != 2}
         disabled={isNextButtonDisabled}
         onClick={handleClickNextStep}
       >
         Next Step <ChevronRight css={IconSize} />
       </NextButton>
 
-      <Space />
+      <NextButton isShow={step == 2} onClick={handleClickExport}>
+        Export GLB <Download css={IconSize} />
+      </NextButton>
+
+      <Space></Space>
     </div>
   );
 }

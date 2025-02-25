@@ -1,8 +1,13 @@
-import React, { useState } from "react";
-import { Canvas } from "@react-three/fiber";
+import React, { useEffect, useState } from "react";
+import { Canvas, useThree } from "@react-three/fiber";
 import { useAreaStore } from "@/state/areaStore";
 import { OrbitControls, Html } from "@react-three/drei";
 import * as THREE from "three";
+import { NextButton } from "@/components/button/BottomButton";
+import { ChevronRight } from "lucide-react";
+import { css } from "@emotion/react";
+import { useActionStore } from "@/state/exportStore";
+import { GLTFExporter } from "three/examples/jsm/Addons.js";
 
 function Building({
   shape,
@@ -121,7 +126,7 @@ export function Space() {
   const buildingsData = areaData();
 
   return (
-    <Canvas camera={{ fov: 90, near: 0.1, far: 4000 }}>
+    <Canvas camera={{ fov: 90, near: 0.1, far: 7000 }}>
       <ambientLight intensity={Math.PI / 2} />
       <spotLight
         position={[10, 10, 10]}
@@ -140,15 +145,69 @@ export function Space() {
       ))}
       <pointLight position={[-10, -10, -10]} decay={0} intensity={Math.PI} />
       <OrbitControls />
+      <Export />
     </Canvas>
   );
 }
 
-function Floor() {
-  return (
-    <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-      <planeGeometry args={[50, 50]} />
-      <meshStandardMaterial color="#ffffff" />
-    </mesh>
-  );
+// function Floor() {
+//   return (
+//     <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+//       <planeGeometry args={[50, 50]} />
+//       <meshStandardMaterial color="#ffffff" />
+//     </mesh>
+//   );
+// }
+
+export function Export() {
+  const { scene } = useThree();
+
+  const action = useActionStore((state) => state.action);
+  const setAction = useActionStore((state) => state.setAction);
+
+  useEffect(() => {
+    if (action == true) {
+      setAction(false);
+      console.log(action);
+      exportGLB();
+    }
+  }, [action]);
+
+  const exportGLB = () => {
+    const sceneClone = scene.clone(true);
+    sceneClone.traverse((child) => {
+      if (child.userData && child.userData.skipExport === true) {
+        if (child.parent) child.parent.remove(child);
+      }
+    });
+
+    const exporter = new GLTFExporter();
+    const options = {
+      binary: true,
+      embedImages: true,
+    };
+    exporter.parse(
+      sceneClone,
+      (result) => {
+        if (result instanceof ArrayBuffer) {
+          const blob = new Blob([result], { type: "model/gltf-binary" });
+          const link = document.createElement("a");
+          link.style.display = "none";
+          document.body.appendChild(link);
+          link.href = URL.createObjectURL(blob);
+          link.download = "scene.glb";
+          link.click();
+          document.body.removeChild(link);
+        } else {
+          console.error("GLB export failed: unexpected result", result);
+        }
+      },
+      function () {
+        console.log("An error happened");
+      },
+      options
+    );
+  };
+
+  return <></>;
 }
