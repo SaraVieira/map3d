@@ -17,15 +17,29 @@ const IconSize = css({
 
 function RectangleSelector({
   isDrag = true,
+
   bounds,
+  drawBounds,
+
   onChange,
+  onDrawChange,
 }: {
   isDrag: boolean;
+
   bounds: LatLngBounds | null;
+  drawBounds: LatLngBounds | null;
+
   onChange: (bounds: LatLngBounds) => void;
+  onDrawChange: (bounds: LatLngBounds) => void;
 }) {
   const [firstPoint, setFirstPoint] = useState<LatLng | null>(null);
+
   const lastLatlngRef = useRef<LatLng | null>(null);
+
+  const adjustLng = (latlng: LatLng): LatLng => {
+    const adjustedLng = ((((latlng.lng + 180) % 360) + 360) % 360) - 180;
+    return new L.LatLng(latlng.lat, adjustedLng);
+  };
 
   const map = useMapEvents({
     mousedown(e) {
@@ -35,13 +49,19 @@ function RectangleSelector({
     },
     mousemove(e) {
       if (firstPoint) {
-        lastLatlngRef.current = e.latlng;
-        onChange(new L.LatLngBounds(firstPoint, e.latlng));
+        lastLatlngRef.current = adjustLng(e.latlng);
+        onDrawChange(new L.LatLngBounds(firstPoint, e.latlng));
+        onChange(
+          new L.LatLngBounds(adjustLng(firstPoint), adjustLng(e.latlng))
+        );
       }
     },
     mouseup(e) {
       if (firstPoint) {
-        onChange(new L.LatLngBounds(firstPoint, e.latlng));
+        onDrawChange(new L.LatLngBounds(firstPoint, e.latlng));
+        onChange(
+          new L.LatLngBounds(adjustLng(firstPoint), adjustLng(e.latlng))
+        );
         setFirstPoint(null);
       }
     },
@@ -62,14 +82,18 @@ function RectangleSelector({
         const touch = e.touches[0];
         const latlng = map.mouseEventToLatLng(touch as any);
         lastLatlngRef.current = latlng;
-        onChange(new L.LatLngBounds(firstPoint, latlng));
+
+        onDrawChange(new L.LatLngBounds(firstPoint, latlng));
+        onChange(new L.LatLngBounds(adjustLng(firstPoint), adjustLng(latlng)));
       }
     };
 
     const handleTouchEnd = (e: TouchEvent) => {
       if (firstPoint) {
         const latlng = lastLatlngRef.current || firstPoint;
-        onChange(new L.LatLngBounds(firstPoint, latlng));
+
+        onDrawChange(new L.LatLngBounds(firstPoint, latlng));
+        onChange(new L.LatLngBounds(adjustLng(firstPoint), adjustLng(latlng)));
         setFirstPoint(null);
       }
     };
@@ -91,8 +115,8 @@ function RectangleSelector({
     }
   }, [isDrag, map]);
 
-  return bounds ? (
-    <Rectangle bounds={bounds} pathOptions={{ color: "blue" }} />
+  return drawBounds ? (
+    <Rectangle bounds={drawBounds} pathOptions={{ color: "blue" }} />
   ) : null;
 }
 
@@ -105,6 +129,7 @@ export function MapComponent({
 }) {
   const [isDrag, setIsDrag] = useState(true);
   const [bounds, setBounds] = useState<LatLngBounds | null>(null);
+  const [drawBounds, setDrawBounds] = useState<LatLngBounds | null>(null);
 
   const handleClickSwitchDrag = () => {
     setIsDrag(!isDrag);
@@ -113,11 +138,17 @@ export function MapComponent({
   const handleClickRemoveBox = () => {
     onRemove();
     setBounds(null);
+    setDrawBounds(null);
     setIsDrag(true);
   };
 
   const handleChangeDone = (e) => {
     setBounds(e);
+    onDone([e._northEast, e._southWest]);
+  };
+
+  const handleChangeDraw = (e) => {
+    setDrawBounds(e);
     onDone([e._northEast, e._southWest]);
   };
 
@@ -203,8 +234,10 @@ export function MapComponent({
         />
         <RectangleSelector
           bounds={bounds}
+          drawBounds={drawBounds}
           isDrag={isDrag}
           onChange={handleChangeDone}
+          onDrawChange={handleChangeDraw}
         />
       </MapContainer>
     </div>

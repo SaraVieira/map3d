@@ -137,7 +137,8 @@ function App() {
           <Column gap="0.5rem">
             <Title>Generate 3d map</Title>
             <Description>
-              Tools to create 3D maps based on maps and export them in 3D format
+              Tools to create 3D maps based on maps and export them in GLB
+              format
             </Description>
           </Column>
           <MapComponent
