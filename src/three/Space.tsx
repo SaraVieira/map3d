@@ -8,6 +8,8 @@ import { GLTFExporter } from "three/examples/jsm/Addons.js";
 import Car from "./Car";
 import instanceFleet from "@/api/axios";
 
+const scale = 51000;
+
 function Building({
   shape,
   extrudeSettings,
@@ -79,10 +81,9 @@ function Roads({ area }: { area: any }) {
   if (!area || area.length < 2) return null;
   const refLat = (area[1].lat + area[0].lat) / 2;
   const refLng = (area[1].lng + area[0].lng) / 2;
-  const scale = 51000;
 
   function project(lat: number, lng: number) {
-    const x = (lng - refLng) * scale;
+    const x = (lng - refLng) * scale * Math.cos((refLat * Math.PI) / 180);
     const y = (lat - refLat) * scale;
     return new THREE.Vector2(x, y);
   }
@@ -203,17 +204,12 @@ export function Space() {
   const center = useAreaStore((state) => state.center);
   const refLat = (center[1].lat + center[0].lat) / 2;
   const refLng = (center[1].lng + center[0].lng) / 2;
-  const scale = 51000;
 
   function project(lat: number, lng: number) {
-    const x = (lng - refLng) * scale;
+    const x = (lng - refLng) * scale * Math.cos((refLat * Math.PI) / 180);
     const y = (lat - refLat) * scale;
     return new THREE.Vector2(x, y);
   }
-
-  useEffect(() => {
-    setRealCenter(center);
-  }, [areas]);
 
   const areaData = () => {
     const result: Array<{
@@ -242,6 +238,10 @@ export function Space() {
     });
     return result;
   };
+
+  useEffect(() => {
+    setRealCenter(center);
+  }, [areas]);
 
   const buildingsData = areaData();
 
