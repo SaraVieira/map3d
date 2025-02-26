@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 type AreaStore = {
-  areas: [];
+  areas: any;
   center: {
     lat: number;
     lng: number;

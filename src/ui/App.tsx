@@ -1,11 +1,11 @@
 import { css } from "@emotion/react";
-import { ExportButton, Space } from "../three/Space";
+import { Space } from "../three/Space";
 import { FullscreenModal } from "../components/FullscreenModal";
 import { Title } from "@/components/text/Title";
 import { Description } from "@/components/text/Description";
 import { Column } from "@/components/flex/Column";
 import { MapComponent } from "@/components/map/SelectMap";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Button,
   NextButton,
@@ -124,7 +124,7 @@ function App() {
     setIsExportModal(true);
   };
 
-  useState(() => {
+  useEffect(() => {
     checkFleetLogin();
   }, []);
 

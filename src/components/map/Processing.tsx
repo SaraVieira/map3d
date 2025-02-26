@@ -36,7 +36,7 @@ export function BuildingHeights({ area }: { area: any }) {
     })
       .then((response) => response.json())
       .then((data) => {
-        const blds: Building[] = data.elements.map((element) => ({
+        const blds: any = data.elements.map((element) => ({
           id: element.id,
           tags: element.tags,
           geometry: element.geometry

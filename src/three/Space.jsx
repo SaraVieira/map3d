@@ -1,25 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { Canvas, useThree } from "@react-three/fiber";
+import { useEffect, useState } from "react";
+import { Canvas, extend, ReactThreeFiber, useThree } from "@react-three/fiber";
 import { useAreaStore } from "@/state/areaStore";
-import { OrbitControls, Html, Sky, Environment } from "@react-three/drei";
+import { Html, Sky, Environment, Line } from "@react-three/drei";
 import * as THREE from "three";
 import { useActionStore } from "@/state/exportStore";
 import { GLTFExporter } from "three/examples/jsm/Addons.js";
 import Car from "./Car";
 import instanceFleet from "@/api/axios";
 
-function Building({
-  shape,
-  extrudeSettings,
-  tags,
-}: {
-  shape: THREE.Shape;
-  extrudeSettings: any;
-  tags: any;
-}) {
+function Building({ shape, extrudeSettings, tags }) {
   const [hovered, setHovered] = useState(false);
   const [clicked, setClicked] = useState(false);
-  const [hoverPos, setHoverPos] = useState<THREE.Vector3 | null>(null);
+  const [hoverPos, setHoverPos] = (useState < THREE.Vector3) | (null > null);
   return (
     <mesh
       onPointerOver={(e) => {
@@ -74,14 +66,14 @@ function Building({
   );
 }
 
-function Roads({ area }: { area: any }) {
-  const [roads, setRoads] = useState<any[]>([]);
+function Roads({ area }) {
+  const [roads, setRoads] = useState([]);
   if (!area || area.length < 2) return null;
   const refLat = (area[1].lat + area[0].lat) / 2;
   const refLng = (area[1].lng + area[0].lng) / 2;
   const scale = 51000;
 
-  function project(lat: number, lng: number) {
+  function project(lat, lng) {
     const x = (lng - refLng) * scale;
     const y = (lat - refLat) * scale;
     return new THREE.Vector2(x, y);
@@ -109,11 +101,14 @@ function Roads({ area }: { area: any }) {
     <>
       {roads.map((road, index) => {
         if (!road.geometry || road.geometry.length < 2) return null;
-        const points = road.geometry.map((pt: any) => {
+
+        const points = road.geometry.map((pt) => {
           const v = project(pt.lat, pt.lon);
           return new THREE.Vector3(v.x, 0.1, -v.y);
         });
+
         const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+
         return (
           <line key={index} geometry={lineGeometry}>
             <lineBasicMaterial
@@ -152,15 +147,11 @@ export function Export() {
     formData.append("description", "");
     formData.append("spaceId", fleetSpaceId);
 
-    const requestUploadFile = await instanceFleet.post(
-      "space/file/mesh",
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
+    await instanceFleet.post("space/file/mesh", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
   };
 
   const exportGLB = () => {
@@ -168,7 +159,7 @@ export function Export() {
     sceneClone.traverse((child) => {
       if (child.userData && child.userData.skipExport === true)
         child.parent?.remove(child);
-      if ((child as any).isHtml === true) child.parent?.remove(child);
+      if (child.isHtml === true) child.parent?.remove(child);
     });
     const exporter = new GLTFExporter();
     const options = { binary: true, embedImages: true };
@@ -212,7 +203,7 @@ export function Space() {
   const refLng = (center[1].lng + center[0].lng) / 2;
   const scale = 51000;
 
-  function project(lat: number, lng: number) {
+  function project(lat, lng) {
     const x = (lng - refLng) * scale;
     const y = (lat - refLat) * scale;
     return new THREE.Vector2(x, y);
@@ -223,16 +214,10 @@ export function Space() {
   }, [areas]);
 
   const areaData = () => {
-    const result: Array<{
-      shape: THREE.Shape;
-      extrudeSettings: any;
-      tags: any;
-    }> = [];
-    areas.forEach((bld: any) => {
+    const result = [];
+    areas.forEach((bld) => {
       if (!bld.geometry || bld.geometry.length < 3) return;
-      const shapePoints = bld.geometry.map((pt: any) =>
-        project(pt.lat, pt.lng)
-      );
+      const shapePoints = bld.geometry.map((pt) => project(pt.lat, pt.lng));
       if (!shapePoints[0].equals(shapePoints[shapePoints.length - 1]))
         shapePoints.push(shapePoints[0]);
       const shape = new THREE.Shape(shapePoints);

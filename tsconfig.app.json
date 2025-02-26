@@ -17,6 +17,7 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": false,
     "types": ["@emotion/react/types/css-prop"],
     "jsxImportSource": "@emotion/react",
     "baseUrl": ".",

@@ -1,12 +1,11 @@
 import React, { useRef, useEffect, useCallback } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
-import { OrbitControls, Html } from "@react-three/drei";
-import { css } from "@emotion/react";
+import { OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
 import { useCarStore } from "@/state/carStore";
 
 const Car = () => {
-  const carRef = useRef();
+  const carRef = useRef(null);
   const { camera } = useThree();
   const thirdMode = useCarStore((state) => state.thirdMode);
   const setThirdMode = useCarStore((state) => state.setThirdMode);
