@@ -22,6 +22,9 @@ interface ButtonProps
 
 export function TopNav({ step }: { step: number }) {
   const setThirdMode = useCarStore((state) => state.setThirdMode);
+  const thirdMode = useCarStore((state) => state.thirdMode);
+  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+
   const [openModal, setOpenModal] = useState(false);
 
   return (
@@ -91,9 +94,25 @@ export function TopNav({ step }: { step: number }) {
             Options
           </NavButton>
 
-          <NavButton isShow={step == 2} onClick={() => setThirdMode(true)}>
-            Car Mode
-          </NavButton>
+          {!isMobile && (
+            <>
+              {thirdMode ? (
+                <NavButton
+                  isShow={step == 2}
+                  onClick={() => setThirdMode(false)}
+                >
+                  Disable Car
+                </NavButton>
+              ) : (
+                <NavButton
+                  isShow={step == 2}
+                  onClick={() => setThirdMode(true)}
+                >
+                  Car Mode
+                </NavButton>
+              )}
+            </>
+          )}
         </div>
       </div>
 
