@@ -37,6 +37,7 @@ function RectangleSelector({
   const map = useMapEvents({
     mousedown(e) {
       if (isDrag == false) {
+        console.log(e);
         setFirstPoint(e.latlng);
       }
     },
@@ -151,7 +152,7 @@ export function MapComponent({
       </div>
 
       <MapContainer
-        center={[36.48656, 127.29064]}
+        center={[40.8, -73.95]}
         zoom={13}
         style={{
           height: "70vh",
