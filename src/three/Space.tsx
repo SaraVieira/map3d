@@ -8,10 +8,18 @@ import { GLTFExporter } from "three/examples/jsm/Addons.js";
 import Car from "./Car";
 import instanceFleet from "@/api/axios";
 
-function Building({ shape, extrudeSettings, tags }) {
+function Building({
+  shape,
+  extrudeSettings,
+  tags,
+}: {
+  shape: THREE.Shape;
+  extrudeSettings: any;
+  tags: any;
+}) {
   const [hovered, setHovered] = useState(false);
   const [clicked, setClicked] = useState(false);
-  const [hoverPos, setHoverPos] = (useState < THREE.Vector3) | (null > null);
+  const [hoverPos, setHoverPos] = useState<THREE.Vector3 | null>(null);
   return (
     <mesh
       onPointerOver={(e) => {
@@ -66,14 +74,14 @@ function Building({ shape, extrudeSettings, tags }) {
   );
 }
 
-function Roads({ area }) {
-  const [roads, setRoads] = useState([]);
+function Roads({ area }: { area: any }) {
+  const [roads, setRoads] = useState<any[]>([]);
   if (!area || area.length < 2) return null;
   const refLat = (area[1].lat + area[0].lat) / 2;
   const refLng = (area[1].lng + area[0].lng) / 2;
   const scale = 51000;
 
-  function project(lat, lng) {
+  function project(lat: number, lng: number) {
     const x = (lng - refLng) * scale;
     const y = (lat - refLat) * scale;
     return new THREE.Vector2(x, y);
@@ -102,22 +110,16 @@ function Roads({ area }) {
       {roads.map((road, index) => {
         if (!road.geometry || road.geometry.length < 2) return null;
 
-        const points = road.geometry.map((pt) => {
+        const points = road.geometry.map((pt: any) => {
           const v = project(pt.lat, pt.lon);
           return new THREE.Vector3(v.x, 0.1, -v.y);
         });
 
-        const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
-
-        return (
-          <line key={index} geometry={lineGeometry}>
-            <lineBasicMaterial
-              attach="material"
-              color="#34f516"
-              linewidth={4}
-            />
-          </line>
+        const lineGeometry: any = new THREE.BufferGeometry().setFromPoints(
+          points
         );
+
+        return <Line points={points} color="#34f516" lineWidth={1}></Line>;
       })}
     </>
   );
@@ -159,7 +161,7 @@ export function Export() {
     sceneClone.traverse((child) => {
       if (child.userData && child.userData.skipExport === true)
         child.parent?.remove(child);
-      if (child.isHtml === true) child.parent?.remove(child);
+      if ((child as any).isHtml === true) child.parent?.remove(child);
     });
     const exporter = new GLTFExporter();
     const options = { binary: true, embedImages: true };
@@ -197,13 +199,13 @@ export function Export() {
 
 export function Space() {
   const areas = useAreaStore((state) => state.areas);
-  const [realCenter, setRealCenter] = useState();
+  const [realCenter, setRealCenter] = useState<any>();
   const center = useAreaStore((state) => state.center);
   const refLat = (center[1].lat + center[0].lat) / 2;
   const refLng = (center[1].lng + center[0].lng) / 2;
   const scale = 51000;
 
-  function project(lat, lng) {
+  function project(lat: number, lng: number) {
     const x = (lng - refLng) * scale;
     const y = (lat - refLat) * scale;
     return new THREE.Vector2(x, y);
@@ -214,10 +216,16 @@ export function Space() {
   }, [areas]);
 
   const areaData = () => {
-    const result = [];
-    areas.forEach((bld) => {
+    const result: Array<{
+      shape: THREE.Shape;
+      extrudeSettings: any;
+      tags: any;
+    }> = [];
+    areas.forEach((bld: any) => {
       if (!bld.geometry || bld.geometry.length < 3) return;
-      const shapePoints = bld.geometry.map((pt) => project(pt.lat, pt.lng));
+      const shapePoints = bld.geometry.map((pt: any) =>
+        project(pt.lat, pt.lng)
+      );
       if (!shapePoints[0].equals(shapePoints[shapePoints.length - 1]))
         shapePoints.push(shapePoints[0]);
       const shape = new THREE.Shape(shapePoints);
