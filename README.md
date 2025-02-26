@@ -6,7 +6,7 @@
 </p>
 
 <p align='center'>
-<a href="https://map.fleet.im/">Visit</a> · <a href="https://github.com/cartesiancs/map3d/issues">Report Bugs</a>
+<a href="https://map.fleet.im/">Visit Website</a> · <a href="https://github.com/cartesiancs/map3d/issues">Report Bugs</a>
 </p>
 
 ## About The Project
@@ -15,15 +15,24 @@ This is a 3D building mapping service implemented with [React-Three-Fiber](https
 
 The map files are based on OpenStreetMap data.
 
-
-
 https://github.com/user-attachments/assets/1b61c2f8-dcf9-40bb-9804-59f6a74594dc
 
-
+> [!IMPORTANT]
+> 📢 <strong>This project cannot guarantee the accuracy of the data.</strong> Since it uses OpenStreetMap data, some height values may be missing or incorrectly recorded. To address this issue, an option will be added in the future to allow users to manually correct the data.
 
 ## Roadmap
 
+- [x] Create 3D Buildings
+- [x] Create Roads
 - [x] Export GLB
 - [ ] Building Texture
 - [ ] Height Customization
 - [ ] Material
+
+## Contributors
+
+Hyeong Jun Huh [(GitHub)](https://github.com/DipokalLab)
+
+## License
+
+MIT License
