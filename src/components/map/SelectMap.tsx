@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   MapContainer,
   Rectangle,
@@ -22,27 +22,20 @@ function RectangleSelector({
 }: {
   isDrag: boolean;
   bounds: LatLngBounds | null;
-  onChange: (LatLngBounds: LatLngBounds) => void;
+  onChange: (bounds: LatLngBounds) => void;
 }) {
   const [firstPoint, setFirstPoint] = useState<LatLng | null>(null);
-
-  useEffect(() => {
-    if (isDrag) {
-      map.dragging.enable();
-    } else {
-      map.dragging.disable();
-    }
-  }, [isDrag]);
+  const lastLatlngRef = useRef<LatLng | null>(null);
 
   const map = useMapEvents({
     mousedown(e) {
-      if (isDrag == false) {
-        console.log(e);
+      if (!isDrag) {
         setFirstPoint(e.latlng);
       }
     },
     mousemove(e) {
       if (firstPoint) {
+        lastLatlngRef.current = e.latlng;
         onChange(new L.LatLngBounds(firstPoint, e.latlng));
       }
     },
@@ -53,6 +46,51 @@ function RectangleSelector({
       }
     },
   });
+
+  useEffect(() => {
+    const container = map.getContainer();
+    const handleTouchStart = (e: TouchEvent) => {
+      if (!isDrag && e.touches.length > 0) {
+        const touch = e.touches[0];
+        const latlng = map.mouseEventToLatLng(touch as any);
+        setFirstPoint(latlng);
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (firstPoint && e.touches.length > 0) {
+        const touch = e.touches[0];
+        const latlng = map.mouseEventToLatLng(touch as any);
+        lastLatlngRef.current = latlng;
+        onChange(new L.LatLngBounds(firstPoint, latlng));
+      }
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (firstPoint) {
+        const latlng = lastLatlngRef.current || firstPoint;
+        onChange(new L.LatLngBounds(firstPoint, latlng));
+        setFirstPoint(null);
+      }
+    };
+
+    container.addEventListener("touchstart", handleTouchStart);
+    container.addEventListener("touchmove", handleTouchMove);
+    container.addEventListener("touchend", handleTouchEnd);
+
+    return () => {
+      container.removeEventListener("touchstart", handleTouchStart);
+      container.removeEventListener("touchmove", handleTouchMove);
+      container.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, [map, isDrag, firstPoint, onChange]);
+
+  useEffect(() => {
+    if (map) {
+      isDrag ? map.dragging.enable() : map.dragging.disable();
+    }
+  }, [isDrag, map]);
+
   return bounds ? (
     <Rectangle bounds={bounds} pathOptions={{ color: "blue" }} />
   ) : null;
