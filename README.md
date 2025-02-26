@@ -15,6 +15,12 @@ This is a 3D building mapping service implemented with [React-Three-Fiber](https
 
 The map files are based on OpenStreetMap data.
 
+
+
+https://github.com/user-attachments/assets/1b61c2f8-dcf9-40bb-9804-59f6a74594dc
+
+
+
 ## Roadmap
 
 - [x] Export GLB
