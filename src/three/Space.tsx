@@ -4,8 +4,7 @@ import { useAreaStore } from "@/state/areaStore";
 import { Html, Sky, Environment, Line } from "@react-three/drei";
 import * as THREE from "three";
 import { useActionStore } from "@/state/exportStore";
-import { GLTFExporter } from "three/examples/jsm/Addons.js";
-import Car from "./Car";
+import { GLTFExporter } from "three/examples/jsm/Addons.js"
 import instanceFleet from "@/api/axios";
 
 const scale = 51000;
@@ -266,7 +265,6 @@ export function Space() {
 
       <Roads area={realCenter} />
       <pointLight position={[-10, -10, -10]} decay={0} intensity={Math.PI} />
-      <Car />
       <Export />
       <Sky
         distance={450000}
@@ -276,5 +274,5 @@ export function Space() {
       />
       <Environment preset="city" />
     </Canvas>
-  );
+  )
 }

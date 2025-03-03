@@ -15,9 +15,7 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": false,
-    "noImplicitAny": false,
-
-    "jsxImportSource": "@emotion/react"
+    "noImplicitAny": false
   },
   "include": ["vite.config.ts"]
 }

@@ -1,17 +1,13 @@
-import { css } from "@emotion/react";
-import { SUBTITLE_COLOR } from "@/theme/color";
+import { SUBTITLE_COLOR } from "@/theme/color"
 
 export function Title({ children }: { children?: React.ReactNode }) {
   return (
     <p
-      css={css({
-        margin: 0,
+      style={{
         color: SUBTITLE_COLOR,
-        fontSize: "1.125rem",
-        fontWeight: "600",
-      })}
+      }}
     >
       {children}
     </p>
-  );
+  )
 }
